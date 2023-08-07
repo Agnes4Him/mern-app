@@ -9,7 +9,7 @@ const Home = () => {
     const [users, setUsers] = useState([])
     const [count, setCount] = useState(0)
 
-    const url = "/backend"
+    const url = "backend"
     const handleFormSubmit = (e) => {
         e.preventDefault()
         if (username.length === 0 || email.length === 0) {
