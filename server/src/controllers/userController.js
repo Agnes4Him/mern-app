@@ -1,35 +1,58 @@
 const User = require('../models/userModel')
+const { MongoClient } = require("mongodb")
+const dotenv = require('dotenv')
 
-exports.addUser = (req, res) => {
-    if (req.body.username.trim().length == 0) {
-        console.log("No username in body")
-        res.status(400).json({"message":"no_input"})
-    }else if (req.body.email.trim().length == 0) {
-        console.log("No email in body")
-        res.status(400).json({"message":"no_input"})
-    }else {
-        console.log('Request received', req.body)
-        const user = new User(req.body)
-        user.save()
-        .then((result) => {
-            console.log("User created", result)
-            res.status(200).json({"message":"user_created"})
-        })
-        .catch((err) => {
-            console.log(err)
-            res.status(500).json({message : "internal_error"})
-        })
-    }
-}
+dotenv.config()
+const dbUrl = process.env.DB_URL
+const client = new MongoClient(dbUrl, {
+    //
+})
 
-exports.getUsers = async (req, res) => {
-    try {
-        const users = await User.find()
-        console.log(users)
-        res.status(200).json({message : users})
-    }
-    catch(err) {
-        console.log(err)
-        res.status(500).json({message : "internal_error"})
+client.connect()
+const dbName = "mern"
+const collectionName = "users"
+const database = client.db(dbName);
+const collection = database.collection(collectionName)
+
+exports.addUser = async(req, res) => {
+    if (req) {
+        console.log(req.body)
+        const {username, email} = req.body
+        if (username.trim().length == 0) {
+            console.log("Username is required")
+            res.status(400).json({message:"no_username", data: null})
+        }else if (email.trim().length == 0) {
+            console.log("Email is required")
+            res.status(400).json({message:"no_email", data: null})
+        }else {
+            await collection.findOne({email:email})
+            .then((user) => {
+                if (user) {
+                    console.log('user exist')
+                    res.status(400).json({message : 'user_exist', data : null})
+                }else {
+                    collection.insertOne(req.body)
+                    .then((result) => {
+                        if (result) {
+                            console.log('Result', result)
+                            collection.find({}).toArray((err, allUsers) => {
+                                if (err) {
+                                    console.log(err)
+                                    res.status(500).json({message : 'server_error', data : null})
+                                }else {
+                                    console.log('User added', allUsers)
+                                    res.status(200).json({message : 'user_added', data : allUsers})
+                                    client.close()
+                                }
+                            })
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        res.status(500).json({message : 'server_error', data : null})
+                    }) 
+                }
+            })
+        }
     }
 }

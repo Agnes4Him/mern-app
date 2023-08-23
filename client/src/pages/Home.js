@@ -9,14 +9,22 @@ const Home = () => {
     const [users, setUsers] = useState([])
     const [count, setCount] = useState(0)
 
-    const url = "http://localhost:9000"
+    //const url = 'backend'     for docker-compose file
+    //const url = '/backend'    for k8s with ingess rule
+    //const url 'backend:9000'  for k8s with NodePort as service type for frontend and mongo-express 
+    const url = 'http://localhost:9000' // for local development
     const handleFormSubmit = (e) => {
         e.preventDefault()
         if (username.length === 0 || email.length === 0) {
             setErrorMsg('Incomplete user data')
             setSuccessMsg('')
+            setTimeout(() => {
+                setErrorMsg('') 
+                setUsername('')
+                setEmail('')        
+            }, 3000)
         }else {
-            fetch(`${url}/add-user`, {
+            fetch(url, {
                 method : 'POST',
                 headers : {
                     'Content-Type' : 'application/json'
@@ -27,30 +35,59 @@ const Home = () => {
                 return response.json()
             })
             .then((data) => {
-                console.log(data)
-                if (data.message === 'no_input') {
-                    setErrorMsg('All input fields are required')
+                if (data.message === 'no_username') {
+                    setErrorMsg('username is required')
                     setSuccessMsg('')
-                }else if (data.message === 'user_created') {
+                    setTimeout(() => {
+                        setErrorMsg('') 
+                        setUsername('')
+                        setEmail('')        
+                    }, 3000)
+                }else if (data.message === 'no_email') {
+                    setErrorMsg('email is required')
+                    setSuccessMsg('')
+                    setTimeout(() => {
+                        setErrorMsg('') 
+                        setUsername('')
+                        setEmail('')        
+                    }, 3000)
+                }else if (data.message === 'user_exist') {
+                    setErrorMsg('User already exist')
+                    setSuccessMsg('')
+                    setTimeout(() => {
+                        setErrorMsg('') 
+                        setUsername('')
+                        setEmail('')        
+                    }, 3000)
+                }else if (data.message === 'server_error') {
+                    setErrorMsg('Error occured. Try again later')
+                    setSuccessMsg('')
+                    setTimeout(() => {
+                        setErrorMsg('') 
+                        setUsername('')
+                        setEmail('')        
+                    }, 3000)
+                }else if (data.message === 'user_added') {
                     setSuccessMsg('User successfully created')
                     setErrorMsg('')
                     setTimeout(() => {
                         setSuccessMsg('') 
                         setUsername('')
                         setEmail('')        
-                    }, 2000)
-                    fetch(`${url}/get-users`)
-                    .then((response) => {
-                        return response.json()
-                    })
-                    .then((result) => {
-                        setCount(result.message.length)
-                        setUsers(result.message)
-                    })
+                    }, 3000)
+                    setCount(data.data.length)
+                    setUsers(data.data)
                 }
             })
             .catch((err) => {
                 console.log(err)
+                setErrorMsg('Error occured. Try again later')
+                setSuccessMsg('')
+                setTimeout(() => {
+                    setErrorMsg('') 
+                    setUsername('')
+                    setEmail('')        
+                }, 3000)
             })
         }
     }
