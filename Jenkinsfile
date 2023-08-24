@@ -7,7 +7,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
         APP_NAME = "mern-frontend"
-        IMAGE_TAG = "v2.0"
+        IMAGE_TAG = "v3.0"
     }
     stages {
         stage('Build') {
