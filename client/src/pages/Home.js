@@ -9,8 +9,8 @@ const Home = () => {
     const [users, setUsers] = useState([])
     const [count, setCount] = useState(0)
 
-    const url = 'backend'     //for docker-compose file
-    //const url = '/backend'    //for k8s with ingess rule
+    //const url = 'backend'     //for docker-compose file
+    const url = '/backend'    //for k8s with ingess rule
     //const url = 'backend:9000'  //for k8s with NodePort as service type for frontend and mongo-express 
     //const url = 'http://localhost:9000' // for local development
     const handleFormSubmit = (e) => {
