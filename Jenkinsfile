@@ -6,14 +6,14 @@ pipeline {
     }
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        APP_NAME = "mern-backend"
+        APP_NAME = "mern-frontend"
         IMAGE_TAG = "v2.0"
     }
     stages {
         stage('Build') {
             steps {
                 echo 'Building the app'
-                dir('server') {
+                dir('client') {
                     sh "docker build -t ${DOCKERHUB_CREDENTIALS_USR}/${APP_NAME}:${IMAGE_TAG} ."
                 }
             }
