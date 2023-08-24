@@ -13,7 +13,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the app'
-                dir('') {
+                dir('server') {
                     sh "docker build -t ${DOCKERHUB_CREDENTIALS_USR}/${APP_NAME}:${IMAGE_TAG} ."
                 }
             }
