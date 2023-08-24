@@ -16,18 +16,6 @@ app.use(cors())
 
 app.use(userRoute)
 
-/*mongoose.connect(dbUrl, {useNewUrlParser:true, useUnifiedTopology:true})
-.then((result) => {
-    app.listen(port, () => {
-        console.log(`Listening on port ${port}`)
-    })
-})
-.catch((err) => {
-    console.log(err)
-})
-
-mongoose.set('strictQuery', true)*/
-
 app.listen(port, () => {
     console.log(`Listening on port ${port}`)
 })
